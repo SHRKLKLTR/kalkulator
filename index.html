@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -98,6 +98,27 @@
     margin:14px 0 22px;
   }
 
+  .date-row{
+    text-align:center;
+    margin-top:6px;
+    font-size:13px;
+    letter-spacing:1px;
+    color:#7a7362;
+    text-transform:lowercase;
+    cursor:pointer;
+    text-decoration:underline dotted;
+    text-underline-offset:4px;
+  }
+  .date-row input[type="date"]{
+    font-family:inherit;
+    font-size:13px;
+    letter-spacing:1px;
+    color:var(--ink);
+    background:transparent;
+    border:none;
+    text-align:center;
+  }
+
   .field{
     margin-bottom:22px;
   }
@@ -171,52 +192,90 @@
 </head>
 <body>
   <div class="app">
-    <div class="icon-row"><span class="box"></span> Остаток кассы</div>
+    <div class="icon-row"><span class="box"></span> Залишок каси</div>
 
     <div class="zigzag"></div>
     <div class="card">
-      <div class="card-title">Сменный отчёт · Нал. касса</div>
+      <div class="card-title">Змінний звіт · Готівкова каса</div>
+      <div class="date-row" id="dateDisplay"></div>
       <hr class="divider-dashed">
 
       <div class="field">
-        <label for="morning">1. Сколько было утром</label>
+        <label for="morning">1. Скільки було вранці</label>
         <input id="morning" type="number" inputmode="decimal" placeholder="0.00" step="0.01">
       </div>
 
       <div class="field">
-        <label for="revenue">2. Выручка за день</label>
+        <label for="revenue">2. Виручка за день</label>
         <input id="revenue" type="number" inputmode="decimal" placeholder="0.00" step="0.01">
       </div>
 
       <div class="field">
-        <label for="addition">3. Внесения в кассу (размен и т.п.)</label>
+        <label for="addition">3. Внесення в касу (розмін тощо)</label>
         <input id="addition" type="number" inputmode="decimal" placeholder="0.00" step="0.01">
       </div>
 
       <div class="field" style="margin-bottom:14px;">
-        <label for="collection">4. Инкассация в конце смены</label>
+        <label for="collection">4. Інкасація в кінці зміни</label>
         <input id="collection" type="number" inputmode="decimal" placeholder="0.00" step="0.01">
       </div>
 
       <hr class="divider-dashed">
 
       <div class="result">
-        <div class="label">Остаток на утро</div>
+        <div class="label">Залишок на ранок</div>
         <div class="value" id="result">0,00</div>
       </div>
     </div>
     <div class="zigzag"></div>
 
-    <button class="reset-link" id="resetBtn">Очистить и начать новую смену</button>
+    <button class="reset-link" id="resetBtn">Очистити і почати нову зміну</button>
   </div>
 
 <script>
   const ids = ['morning','revenue','addition','collection'];
   const inputs = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
   const resultEl = document.getElementById('result');
+  const dateDisplay = document.getElementById('dateDisplay');
+  let currentDate = new Date();
+
+  function formatDate(d){
+    return d.toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' });
+  }
+
+  function renderDate(){
+    dateDisplay.textContent = formatDate(currentDate);
+  }
+
+  function toISODate(d){
+    const off = d.getTimezoneOffset();
+    return new Date(d.getTime() - off*60000).toISOString().slice(0,10);
+  }
+
+  dateDisplay.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'date';
+    input.value = toISODate(currentDate);
+    dateDisplay.replaceWith(input);
+    input.focus();
+    if (input.showPicker) { try { input.showPicker(); } catch(e){} }
+    function commit(){
+      if (input.value){
+        const [y,m,dd] = input.value.split('-').map(Number);
+        currentDate = new Date(y, m-1, dd);
+      }
+      input.replaceWith(dateDisplay);
+      renderDate();
+    }
+    input.addEventListener('change', commit);
+    input.addEventListener('blur', commit);
+  });
+
+  renderDate();
+
 
   function fmt(n){
-    return n.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return n.toLocaleString('uk-UA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   function calc(){
