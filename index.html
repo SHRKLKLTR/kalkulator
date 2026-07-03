@@ -188,6 +188,68 @@
     margin-top:10px;
     min-height:14px;
   }
+
+  .staff-btn{
+    display:block;
+    text-align:center;
+    margin-top:14px;
+    color:#7a7362;
+    letter-spacing:2px;
+    font-size:13px;
+    text-transform:uppercase;
+    text-decoration:underline;
+    text-underline-offset:4px;
+    background:none;
+    border:none;
+    cursor:pointer;
+    width:100%;
+    font-family:inherit;
+  }
+  .staff-btn:hover{ color:var(--ink); }
+
+  .overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(28,26,22,0.45);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    z-index:10;
+  }
+  .overlay.open{ display:flex; }
+
+  .modal{
+    background:var(--paper);
+    width:100%;
+    max-width:360px;
+    padding:24px 22px;
+    border:2px solid var(--ink);
+  }
+  .modal-title{
+    text-align:center;
+    letter-spacing:2px;
+    font-size:13px;
+    text-transform:uppercase;
+    margin-bottom:20px;
+  }
+  .modal-close{
+    display:block;
+    text-align:center;
+    margin-top:20px;
+    color:#7a7362;
+    letter-spacing:2px;
+    font-size:13px;
+    text-transform:uppercase;
+    text-decoration:underline;
+    text-underline-offset:4px;
+    background:none;
+    border:none;
+    cursor:pointer;
+    width:100%;
+    font-family:inherit;
+  }
+  .modal-close:hover{ color:var(--ink); }
 </style>
 </head>
 <body>
@@ -230,6 +292,22 @@
     <div class="zigzag"></div>
 
     <button class="reset-link" id="resetBtn">Очистити і почати нову зміну</button>
+    <button class="staff-btn" id="staffBtn">Співробітники</button>
+  </div>
+
+  <div class="overlay" id="staffOverlay">
+    <div class="modal">
+      <div class="modal-title">Хто на зміні</div>
+      <div class="field">
+        <label for="staffHall">Зал</label>
+        <input id="staffHall" type="text" placeholder="Ім'я">
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label for="staffKitchen">Кухня</label>
+        <input id="staffKitchen" type="text" placeholder="Ім'я">
+      </div>
+      <button class="modal-close" id="staffClose">Готово</button>
+    </div>
   </div>
 
 <script>
@@ -298,6 +376,16 @@
   });
 
   calc();
+
+  const staffBtn = document.getElementById('staffBtn');
+  const staffOverlay = document.getElementById('staffOverlay');
+  const staffClose = document.getElementById('staffClose');
+
+  staffBtn.addEventListener('click', () => staffOverlay.classList.add('open'));
+  staffClose.addEventListener('click', () => staffOverlay.classList.remove('open'));
+  staffOverlay.addEventListener('click', (e) => {
+    if (e.target === staffOverlay) staffOverlay.classList.remove('open');
+  });
 </script>
 </body>
 </html>
